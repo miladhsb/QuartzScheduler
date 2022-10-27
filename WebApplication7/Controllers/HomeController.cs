@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using WebApplication7.Jobs;
-using WebApplication7.Models;
-using WebApplication7.Services;
+using QuartzSample.Jobs;
+using QuartzSample.Models;
+using QuartzSample.Services;
 
-namespace WebApplication7.Controllers
+namespace QuartzSample.Controllers
 {
     public class HomeController : Controller
     {

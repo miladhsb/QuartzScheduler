@@ -1,6 +1,6 @@
 ﻿using Quartz;
 
-namespace WebApplication7.Jobs
+namespace QuartzSample.Jobs
 {
     public class LogJob : IJob
     {

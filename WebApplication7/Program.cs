@@ -1,6 +1,6 @@
 using Quartz;
 using Quartz.Impl;
-using WebApplication7.Services;
+using QuartzSample.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

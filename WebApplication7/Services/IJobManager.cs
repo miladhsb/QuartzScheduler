@@ -1,4 +1,4 @@
-﻿namespace WebApplication7.Services
+﻿namespace QuartzSample.Services
 {
     public interface IJobManager
     {

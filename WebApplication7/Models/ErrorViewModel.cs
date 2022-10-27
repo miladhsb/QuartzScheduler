@@ -1,4 +1,4 @@
-namespace WebApplication7.Models
+namespace QuartzSample.Models
 {
     public class ErrorViewModel
     {

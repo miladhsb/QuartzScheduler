@@ -1,7 +1,7 @@
 ﻿using Quartz;
 using Quartz.Impl;
 
-namespace WebApplication7.Services
+namespace QuartzSample.Services
 {
     public class JobManager: IJobManager
     {
