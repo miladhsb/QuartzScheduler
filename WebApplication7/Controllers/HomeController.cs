@@ -17,32 +17,50 @@ namespace QuartzSample.Controllers
             this._jobManager = jobManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var result = await _jobManager.GetJobAllJobs();
+
+            return View(result);
+        }
 
 
-            return View();
+        public async Task<IActionResult> ResumeJob(string key)
+        {
+           await _jobManager.ResumeJob(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> PauseJob(string key)
+        {
+            await _jobManager.PauseJob(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> PauseTrigger(string key)
+        {
+            await _jobManager.PauseTrigger(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> ResumeTrigger(string key)
+        {
+            await _jobManager.ResumeTrigger(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> DeleteJob(string key)
+        {
+            await _jobManager.DeleteJob(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> DeleteTrigger(string key)
+        {
+            await _jobManager.DeleteTrigger(key);
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> CreateSchedule()
+        {
+            await _jobManager.CreateSchedule(typeof(LogJob));
+            return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> StartJob()
-        {
-           await _jobManager.CreateSchedule(typeof(LogJob));
-            return View();
-        }
-        public async Task<IActionResult> StoptJob()
-        {
-          await  _jobManager.StopScheduleWithTrigger(typeof(LogJob));
-            return View();
-        }
-        public async Task<IActionResult> restartSchedule()
-        {
-          
-              await  _jobManager.restartSchedule(typeof(LogJob));
-           
-           
-            
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

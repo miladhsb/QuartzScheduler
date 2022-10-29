@@ -1,5 +1,8 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
+using Quartz.Impl.Triggers;
+using QuartzSample.DTOs;
 
 namespace QuartzSample.Services
 {
@@ -7,38 +10,66 @@ namespace QuartzSample.Services
     {
         private readonly IScheduler _scheduler;
         
-        public JobManager(ISchedulerFactory schedulerFactory )
+        public JobManager(ISchedulerFactory scheduler )
         {
-            _scheduler = schedulerFactory.GetScheduler().Result; ;
-
-             _scheduler.Start().Wait();
-
-        }
-
-         public async Task CreateSchedule(Type Job)
-        {
-            string Triggername = Job.Name + "Trigger";
-            string Jobrname = Job.Name + "Job";
-            var job = await _scheduler.GetJobDetail(new JobKey(Jobrname));
-            var Triger = await _scheduler.GetTrigger(new TriggerKey(Triggername));
-
-            if (job == null && Triger ==null )
-            {
-                await _scheduler.ScheduleJob(CreateJob(Job), CreateTriger(Job));
-            }
-           
+            _scheduler = scheduler.GetScheduler().Result;
          
-
         }
 
-        public async Task restartSchedule(Type Job)
+
+
+
+        public async Task<IEnumerable<GetJobDTO>> GetJobAllJobs()
+        {
+           List<GetJobDTO> jobs = new List<GetJobDTO>();
+
+           var JobKeys = await   _scheduler.GetJobKeys( GroupMatcher<JobKey>.AnyGroup());
+
+            foreach (var item in JobKeys)
+            {
+              
+                var Trigger=(await _scheduler.GetTriggersOfJob( item )).First() as SimpleTriggerImpl;
+                var job=await _scheduler.GetJobDetail( item );
+
+                jobs.Add(new GetJobDTO()
+                {
+                 Jobkey= Trigger.JobName,
+                 JobGroup= Trigger.JobGroup,
+                TriggerKey=Trigger.Name,
+                TriggerGroup=Trigger.Group,
+                JobFirstStartTime= Trigger.StartTimeUtc.ToLocalTime(),
+                JobNextRunTime= Trigger.GetNextFireTimeUtc().Value.ToLocalTime(),
+                JobOldRunTime=Trigger.GetPreviousFireTimeUtc().Value.ToLocalTime(),
+                TriggerCountRun= Trigger.TimesTriggered,
+                ScheduleName= _scheduler.SchedulerName,
+                JobState=(await _scheduler.GetTriggerState(Trigger.Key)).ToString()
+
+
+
+                });
+
+
+            }
+
+               return jobs;
+        }
+
+        public async Task CreateSchedule(Type Job)
         {
             string Triggername = Job.Name + "Trigger";
             string Jobrname = Job.Name + "Job";
-           await _scheduler.AddJob(CreateJob(Job),true);
-           await _scheduler.ScheduleJob( CreateTriger(Job));
+          
+            var Triger = await _scheduler.GetTrigger(new TriggerKey(Triggername));
+            await _scheduler.AddJob(CreateJob(Job),true);
+
+            if (Triger ==null )
+            {
+                await _scheduler.ScheduleJob(CreateTriger(Job));
+            }
 
         }
+
+       
 
         public async Task StopAlljobSchedule()
         {
@@ -46,19 +77,40 @@ namespace QuartzSample.Services
 
         }
 
-        public async Task StopScheduleWithTrigger(Type Job)
+        public async Task DeleteTrigger(string TriggerKey)
         {
-            string Triggername = Job.Name + "Trigger";
-            await _scheduler.UnscheduleJob(new TriggerKey(Triggername));
+            await _scheduler.UnscheduleJob(new TriggerKey(TriggerKey));
+        }
+        public async Task DeleteJob(string Jobkey)
+        {
+            await _scheduler.DeleteJob(new JobKey(Jobkey));
+        }
+
+        public async Task PauseTrigger(string TriggerKey)
+        {
+            await _scheduler.PauseTrigger(new TriggerKey(TriggerKey));
+        }
+
+        public async Task ResumeTrigger(string TriggerKey)
+        {
+            await _scheduler.ResumeTrigger(new TriggerKey(TriggerKey));
+        }
+
+        public async Task PauseJob(string Jobkey)
+        {
+          
+            await _scheduler.PauseJob(new JobKey(Jobkey));
 
         }
 
-        public async Task StopScheduleWithJob(Type Job)
+        public async Task ResumeJob(string Jobkey)
         {
-            string Jobrname = Job.Name + "Job";
-            await _scheduler.DeleteJob(new JobKey(Jobrname));
+
+            await _scheduler.ResumeJob(new JobKey(Jobkey));
 
         }
+
+
 
         private  IJobDetail CreateJob(Type Job)
         {
