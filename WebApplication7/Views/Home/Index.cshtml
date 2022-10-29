@@ -1,8 +1,56 @@
-﻿@{
+﻿@using QuartzSample.DTOs
+@model IEnumerable<GetJobDTO>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ردیف</th>
+                 <th scope="col">JobState</th>
+                <th scope="col">ScheduleName</th>
+                <th scope="col">TriggerGroup</th>
+                <th scope="col">TriggerKey</th>
+                <th scope="col">JobGroup</th>
+                <th scope="col">Jobkey</th>
+                <th scope="col">JobFirstStartTime</th>
+                <th scope="col">JobOldRunTime</th>
+                <th scope="col">JobNextRunTime</th>
+                <th scope="col">TriggerCountRun</th>
+                <th scope="col">Toolse</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @Model)
+            {
+                <tr>
+                    <th scope="row">@(Model.ToList().IndexOf(item)+1)</th>
+                    <td>@item.JobState</td>
+                    <td>@item.ScheduleName</td>
+                    <td>@item.TriggerGroup</td>
+                    <td>@item.TriggerKey</td>
+                    <td>@item.JobGroup</td>
+                    <td>@item.Jobkey</td>
+                    <td>@item.JobFirstStartTime</td>
+                    <td>@item.JobOldRunTime</td>
+                    <td>@item.JobNextRunTime</td>
+                    <td>@item.TriggerCountRun</td>
+                     <td>
+                          <a asp-action="PauseTrigger" asp-route-key="@item.TriggerKey">PauseTrigger</a>
+                          <a asp-action="ResumeTrigger" asp-route-key="@item.TriggerKey">ResumeTrigger</a>
+                          <a asp-action="PauseJob" asp-route-key="@item.Jobkey">PauseJob</a>
+                          <a asp-action="ResumeJob" asp-route-key="@item.Jobkey">ResumeJob</a>
+                          <a asp-action="DeleteJob" asp-route-key="@item.Jobkey">DeleteJob</a>
+                          <a asp-action="DeleteTrigger" asp-route-key="@item.TriggerKey">DeleteTrigger</a>
+                     </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
