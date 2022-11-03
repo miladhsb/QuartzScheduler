@@ -28,25 +28,28 @@ namespace QuartzSample.Services
             foreach (var item in JobKeys)
             {
               
-                var Trigger=(await _scheduler.GetTriggersOfJob( item )).First() as SimpleTriggerImpl;
+                var Trigger=(await _scheduler.GetTriggersOfJob( item )).FirstOrDefault() as SimpleTriggerImpl;
                 var job=await _scheduler.GetJobDetail( item );
-
-                jobs.Add(new GetJobDTO()
+                if (Trigger != null)
                 {
-                 Jobkey= Trigger.JobName,
-                 JobGroup= Trigger.JobGroup,
-                TriggerKey=Trigger.Name,
-                TriggerGroup=Trigger.Group,
-                JobFirstStartTime= Trigger.StartTimeUtc.ToLocalTime(),
-                JobNextRunTime= Trigger.GetNextFireTimeUtc().Value.ToLocalTime(),
-                JobOldRunTime=Trigger.GetPreviousFireTimeUtc().Value.ToLocalTime(),
-                TriggerCountRun= Trigger.TimesTriggered,
-                ScheduleName= _scheduler.SchedulerName,
-                JobState=(await _scheduler.GetTriggerState(Trigger.Key)).ToString()
+                    jobs.Add(new GetJobDTO()
+                    {
+                        Jobkey = Trigger.JobName,
+                        JobGroup = Trigger.JobGroup,
+                        TriggerKey = Trigger.Name,
+                        TriggerGroup = Trigger.Group,
+                        JobFirstStartTime = Trigger.StartTimeUtc.ToLocalTime(),
+                        JobNextRunTime = Trigger.GetNextFireTimeUtc() == null ? DateTimeOffset.Now.ToLocalTime() : Trigger.GetNextFireTimeUtc().Value.ToLocalTime(),
+                        JobOldRunTime = Trigger.GetPreviousFireTimeUtc()==null? DateTimeOffset.Now.ToLocalTime(): Trigger.GetPreviousFireTimeUtc().Value.ToLocalTime(),
+                        TriggerCountRun = Trigger.TimesTriggered,
+                        ScheduleName = _scheduler.SchedulerName,
+                        JobState = (await _scheduler.GetTriggerState(Trigger.Key)).ToString()
 
 
 
-                });
+                    });
+                }
+                
 
 
             }
