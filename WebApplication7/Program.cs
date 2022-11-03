@@ -25,9 +25,9 @@ builder.Services.AddQuartz(q =>
     //q.UseJobFactory<MyJobFactory>();
     //q.UseMicrosoftDependencyInjectionJobFactory();
 
-    q.AddTriggerListener<TriggerListener>();
-    q.AddJobListener<JobListener>();
-    q.AddSchedulerListener<SchedulerListener>();
+    //q.AddTriggerListener<TriggerListener>();
+    //q.AddJobListener<JobListener>();
+    //q.AddSchedulerListener<SchedulerListener>();
 
     
 
