@@ -3,6 +3,7 @@ using QuartzSample.Services;
 
 namespace QuartzSample.Jobs
 {
+    [DisallowConcurrentExecution]
     public class LogJob : IJob
     {
         private readonly ILogger<LogJob> logger;
@@ -17,9 +18,13 @@ namespace QuartzSample.Jobs
         }
         public Task Execute(IJobExecutionContext context)
         {
+
             //var res = jobManager.GetJobAllJobs().Result;
-            logger.LogInformation("logggggggg");
-            Console.WriteLine("logggggggg");
+            logger.LogInformation("starting task");
+           
+            Task.Delay(5000).Wait();
+
+            Console.WriteLine("end task");
             return Task.CompletedTask;
         }
     }
